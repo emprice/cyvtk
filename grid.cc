@@ -1,5 +1,6 @@
 #include <grid.hh>
 
+
 void Grid::computeCellCenter(vtkCell *cell, double center[3])
 {
     double pCenter[3];

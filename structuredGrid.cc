@@ -1,6 +1,7 @@
 #include <structuredGrid.hh>
 #include <vtkPoints.h>
 #include <vtkCellData.h>
+#include <vtkPointData.h>
 #include <vtkDoubleArray.h>
 #include <vtkXMLStructuredGridWriter.h>
 #include <string>
@@ -49,8 +50,7 @@ StructuredGrid::~StructuredGrid()
 }
 
 
-void StructuredGrid::addScalarData(const char *name,
-    void (*f)(double[3], double*))
+void StructuredGrid::addScalarCellData(const char *name, const double *data)
 {
     vtkDoubleArray *xyz = vtkDoubleArray::New();
     xyz->SetName(name);
@@ -60,19 +60,26 @@ void StructuredGrid::addScalarData(const char *name,
     xyz->SetNumberOfTuples(numCells);
 
     for (size_t idx = 0; idx < numCells; idx++)
-    {
-        // compute the center of this cell
-        double center[3];
-        vtkCell *cell = grid->GetCell(idx);
-        computeCellCenter(cell, center);
-
-        // find the value
-        double v;
-        f(center, &v);
-        xyz->SetTuple1(idx, v);
-    }
+        xyz->SetTuple1(idx, data[idx]);
 
     grid->GetCellData()->AddArray(xyz);
+    xyz->Delete();
+}
+
+
+void StructuredGrid::addScalarPointData(const char *name, const double *data)
+{
+    vtkDoubleArray *xyz = vtkDoubleArray::New();
+    xyz->SetName(name);
+    xyz->SetNumberOfComponents(1);
+
+    size_t numPoints = grid->GetNumberOfPoints();
+    xyz->SetNumberOfTuples(numPoints);
+
+    for (size_t idx = 0; idx < numPoints; idx++)
+        xyz->SetTuple1(idx, data[idx]);
+
+    grid->GetPointData()->AddArray(xyz);
     xyz->Delete();
 }
 
@@ -94,3 +101,5 @@ void StructuredGrid::writeToFile(const char *prefix)
     writer->Write();
     writer->Delete();
 }
+
+// vim: set syntax=cpp.doxygen:

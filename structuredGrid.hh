@@ -11,7 +11,8 @@ public:
         double *z, size_t Q);
     ~StructuredGrid();
 
-    void addScalarData(const char *name, void (*f)(double[3], double*));
+    void addScalarCellData(const char *name, const double *data);
+    void addScalarPointData(const char *name, const double *data);
     void writeToFile(const char *prefix);
 
 private:

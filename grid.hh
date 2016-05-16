@@ -6,8 +6,8 @@
 class Grid
 {
 public:
-    virtual void addScalarData(const char *name,
-        void (*f)(double[3], double*)) = 0;
+    virtual void addScalarCellData(const char *name, const double *data) = 0;
+    virtual void addScalarPointData(const char *name, const double *data) = 0;
     virtual void writeToFile(const char *prefix) = 0;
 
 protected:
