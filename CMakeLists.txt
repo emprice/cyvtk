@@ -20,7 +20,6 @@ else()
 endif()
 
 include_directories(.)
-
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
@@ -28,3 +27,6 @@ add_custom_command(OUTPUT cyvtk.cpp COMMAND cython --cplus -2 --fast-fail cyvtk.
 add_library(cyvtk SHARED cyvtk.cpp grid.cc structuredGrid.cc)
 set_target_properties(cyvtk PROPERTIES PREFIX "")
 target_link_libraries(cyvtk ${VTK_LIBRARIES})
+
+add_executable(test main.cc transitTracer.cc)
+target_link_libraries(test ${VTK_LIBRARIES})
