@@ -12,7 +12,11 @@ public:
     ~StructuredGrid();
 
     void addScalarCellData(const char *name, const double *data);
+    void addVectorCellData(const char *name, const double *dataX,
+        const double *dataY, const double *dataZ);
     void addScalarPointData(const char *name, const double *data);
+    void addVectorPointData(const char *name, const double *dataX,
+        const double *dataY, const double *dataZ);
     void writeToFile(const char *prefix);
 
 private:

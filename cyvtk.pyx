@@ -7,7 +7,11 @@ cdef extern from "structuredGrid.hh":
     cdef cppclass StructuredGrid:
         StructuredGrid(double *, size_t, double *, size_t, double *, size_t)
         void addScalarCellData(const char *, const double *)
+        void addVectorCellData(const char *, const double *,
+            const double *, const double *)
         void addScalarPointData(const char *, const double *)
+        void addVectorPointData(const char *, const double *,
+            const double *, const double *)
         void writeToFile(const char *)
 
 
@@ -38,11 +42,35 @@ cdef class PyStructuredGrid:
         self.thisptr.addScalarCellData(name, &(r[0]))
 
 
+    def add_vector_cell_data(self, name,
+    np.ndarray[double, ndim=3, mode='c'] dataX,
+    np.ndarray[double, ndim=3, mode='c'] dataY,
+    np.ndarray[double, ndim=3, mode='c'] dataZ):
+
+        cdef np.ndarray[double, ndim=1, mode='c'] rX = dataX.ravel(order='F')
+        cdef np.ndarray[double, ndim=1, mode='c'] rY = dataY.ravel(order='F')
+        cdef np.ndarray[double, ndim=1, mode='c'] rZ = dataZ.ravel(order='F')
+
+        self.thisptr.addVectorCellData(name, &(rX[0]), &(rY[0]), &(rZ[0]))
+
+
     def add_scalar_point_data(self, name,
     np.ndarray[double, ndim=3, mode='c'] data):
 
         cdef np.ndarray[double, ndim=1, mode='c'] r = data.ravel(order='F')
         self.thisptr.addScalarPointData(name, &(r[0]))
+
+
+    def add_vector_point_data(self, name,
+    np.ndarray[double, ndim=3, mode='c'] dataX,
+    np.ndarray[double, ndim=3, mode='c'] dataY,
+    np.ndarray[double, ndim=3, mode='c'] dataZ):
+
+        cdef np.ndarray[double, ndim=1, mode='c'] rX = dataX.ravel(order='F')
+        cdef np.ndarray[double, ndim=1, mode='c'] rY = dataY.ravel(order='F')
+        cdef np.ndarray[double, ndim=1, mode='c'] rZ = dataZ.ravel(order='F')
+
+        self.thisptr.addVectorPointData(name, &(rX[0]), &(rY[0]), &(rZ[0]))
 
 
     def write_to_file(self, prefix):

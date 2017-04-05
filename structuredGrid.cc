@@ -59,8 +59,26 @@ void StructuredGrid::addScalarCellData(const char *name, const double *data)
     size_t numCells = grid->GetNumberOfCells();
     xyz->SetNumberOfTuples(numCells);
 
-    for (size_t idx = 0; idx < numCells; idx++)
+    for (size_t idx = 0; idx < numCells; ++idx)
         xyz->SetTuple1(idx, data[idx]);
+
+    grid->GetCellData()->AddArray(xyz);
+    xyz->Delete();
+}
+
+
+void StructuredGrid::addVectorCellData(const char *name, const double *dataX,
+    const double *dataY, const double *dataZ)
+{
+    vtkDoubleArray *xyz = vtkDoubleArray::New();
+    xyz->SetName(name);
+    xyz->SetNumberOfComponents(3);
+
+    size_t numCells = grid->GetNumberOfCells();
+    xyz->SetNumberOfTuples(numCells);
+
+    for (size_t idx = 0; idx < numCells; ++idx)
+        xyz->SetTuple3(idx, dataX[idx], dataY[idx], dataZ[idx]);
 
     grid->GetCellData()->AddArray(xyz);
     xyz->Delete();
@@ -76,8 +94,26 @@ void StructuredGrid::addScalarPointData(const char *name, const double *data)
     size_t numPoints = grid->GetNumberOfPoints();
     xyz->SetNumberOfTuples(numPoints);
 
-    for (size_t idx = 0; idx < numPoints; idx++)
+    for (size_t idx = 0; idx < numPoints; ++idx)
         xyz->SetTuple1(idx, data[idx]);
+
+    grid->GetPointData()->AddArray(xyz);
+    xyz->Delete();
+}
+
+
+void StructuredGrid::addVectorPointData(const char *name, const double *dataX,
+    const double *dataY, const double *dataZ)
+{
+    vtkDoubleArray *xyz = vtkDoubleArray::New();
+    xyz->SetName(name);
+    xyz->SetNumberOfComponents(3);
+
+    size_t numPoints = grid->GetNumberOfPoints();
+    xyz->SetNumberOfTuples(numPoints);
+
+    for (size_t idx = 0; idx < numPoints; ++idx)
+        xyz->SetTuple3(idx, dataX[idx], dataY[idx], dataZ[idx]);
 
     grid->GetPointData()->AddArray(xyz);
     xyz->Delete();
@@ -95,7 +131,11 @@ void StructuredGrid::writeToFile(const char *prefix)
     writer->SetFileName(oss.str().c_str());
 
     // attach the grid to the writer
+#if VTK_MAJOR_VERSION <= 5
+    writer->SetInput(grid);
+#else
     writer->SetInputData(grid);
+#endif
 
     // write the file and clean up
     writer->Write();
