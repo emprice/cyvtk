@@ -1,41 +1,30 @@
-#include <structuredGrid.hh>
+#include <unstructuredGrid.hh>
 #include <vtkPoints.h>
 #include <vtkCellData.h>
 #include <vtkPointData.h>
 #include <vtkDoubleArray.h>
-#include <vtkXMLStructuredGridWriter.h>
+#include <vtkXMLUnstructuredGridWriter.h>
 #include <string>
 #include <sstream>
 
 
-StructuredGrid::StructuredGrid(double *x, size_t N, double *y, size_t P,
-    double *z, size_t Q)
+UnstructuredGrid::UnstructuredGrid(double *x, double *y, double *z, size_t N)
 {
     // initialize a new grid object
-    grid = vtkStructuredGrid::New();
+    grid = vtkUnstructuredGrid::New();
 
     // allocate memory for all points
     vtkPoints *points = vtkPoints::New();
-    points->SetNumberOfPoints(N * P * Q);
-
-    size_t idx = 0;
+    points->SetNumberOfPoints(N);
 
     // loop needs to be in fortran order (first index varies fastest, last
     // index varies slowest) for vtk to be happy
-    for (size_t k = 0; k < Q; k++)
+    for (size_t idx = 0; idx < N; ++idx)
     {
-        for (size_t j = 0; j < P; j++)
-        {
-            for (size_t i = 0; i < N; i++)
-            {
-                points->SetPoint(idx, x[i], y[j], z[k]);
-                idx++;
-            }
-        }
+        points->SetPoint(idx, x[idx], y[idx], z[idx]);
     }
 
     // attach the points to the grid
-    grid->SetDimensions(N, P, Q);
     grid->SetPoints(points);
 
     // clean up memory
@@ -43,14 +32,14 @@ StructuredGrid::StructuredGrid(double *x, size_t N, double *y, size_t P,
 }
 
 
-StructuredGrid::~StructuredGrid()
+UnstructuredGrid::~UnstructuredGrid()
 {
     // clean up memory
     grid->Delete();
 }
 
 
-void StructuredGrid::addScalarCellData(const char *name, const double *data)
+void UnstructuredGrid::addScalarCellData(const char *name, const double *data)
 {
     vtkDoubleArray *xyz = vtkDoubleArray::New();
     xyz->SetName(name);
@@ -67,7 +56,7 @@ void StructuredGrid::addScalarCellData(const char *name, const double *data)
 }
 
 
-void StructuredGrid::addVectorCellData(const char *name, const double *dataX,
+void UnstructuredGrid::addVectorCellData(const char *name, const double *dataX,
     const double *dataY, const double *dataZ)
 {
     vtkDoubleArray *xyz = vtkDoubleArray::New();
@@ -85,7 +74,7 @@ void StructuredGrid::addVectorCellData(const char *name, const double *dataX,
 }
 
 
-void StructuredGrid::addScalarPointData(const char *name, const double *data)
+void UnstructuredGrid::addScalarPointData(const char *name, const double *data)
 {
     vtkDoubleArray *xyz = vtkDoubleArray::New();
     xyz->SetName(name);
@@ -102,7 +91,7 @@ void StructuredGrid::addScalarPointData(const char *name, const double *data)
 }
 
 
-void StructuredGrid::addVectorPointData(const char *name, const double *dataX,
+void UnstructuredGrid::addVectorPointData(const char *name, const double *dataX,
     const double *dataY, const double *dataZ)
 {
     vtkDoubleArray *xyz = vtkDoubleArray::New();
@@ -120,7 +109,7 @@ void StructuredGrid::addVectorPointData(const char *name, const double *dataX,
 }
 
 
-void StructuredGrid::addScalarFieldData(const char *name, const double data)
+void UnstructuredGrid::addScalarFieldData(const char *name, const double data)
 {
     vtkDoubleArray *f = vtkDoubleArray::New();
     f->SetName(name);
@@ -132,10 +121,10 @@ void StructuredGrid::addScalarFieldData(const char *name, const double data)
 }
 
 
-void StructuredGrid::writeToFile(const char *prefix)
+void UnstructuredGrid::writeToFile(const char *prefix)
 {
     // create a new writer
-    vtkXMLStructuredGridWriter *writer = vtkXMLStructuredGridWriter::New();
+    vtkXMLUnstructuredGridWriter *writer = vtkXMLUnstructuredGridWriter::New();
 
     // construct the filename from the given prefix and default extension
     std::ostringstream oss;

@@ -24,7 +24,7 @@ find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
 add_custom_command(OUTPUT cyvtk.cpp COMMAND cython --cplus -2 --fast-fail cyvtk.pyx MAIN_DEPENDENCY cyvtk.pyx)
-add_library(cyvtk SHARED cyvtk.cpp grid.cc structuredGrid.cc)
+add_library(cyvtk SHARED cyvtk.cpp grid.cc structuredGrid.cc unstructuredGrid.cc)
 set_target_properties(cyvtk PROPERTIES PREFIX "")
 target_link_libraries(cyvtk ${VTK_LIBRARIES})
 include_directories("/usr/include/python2.7")

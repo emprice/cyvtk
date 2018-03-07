@@ -1,15 +1,14 @@
-#ifndef __STRUCTUREDGRID_HH__
-#define __STRUCTUREDGRID_HH__
+#ifndef __UNSTRUCTUREDGRID_HH__
+#define __UNSTRUCTUREDGRID_HH__
 
 #include <grid.hh>
-#include <vtkStructuredGrid.h>
+#include <vtkUnstructuredGrid.h>
 
-class StructuredGrid : protected Grid
+class UnstructuredGrid : protected Grid
 {
 public:
-    StructuredGrid(double *x, size_t N, double *y, size_t P,
-        double *z, size_t Q);
-    ~StructuredGrid();
+    UnstructuredGrid(double *x, double *y, double *z, size_t N);
+    ~UnstructuredGrid();
 
     void addScalarCellData(const char *name, const double *data);
     void addVectorCellData(const char *name, const double *dataX,
@@ -21,7 +20,7 @@ public:
     void writeToFile(const char *prefix);
 
 private:
-    vtkStructuredGrid *grid;
+    vtkUnstructuredGrid *grid;
 };
 
-#endif      // __STRUCTUREDGRID_HH__
+#endif      // __UNSTRUCTUREDGRID_HH__

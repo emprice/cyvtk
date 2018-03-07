@@ -21,5 +21,10 @@ vz = zz
 
 c = cyvtk.PyStructuredGrid(r, theta, phi)
 c.add_scalar_point_data('foo', ff)
-c.add_vector_point_data('baz', vx, vy, vz)
-c.write_to_file('hello')
+c.add_vector_point_data('bar', vx, vy, vz)
+c.write_to_file('baz')
+
+c = cyvtk.PyUnstructuredGrid(xx.ravel(), yy.ravel(), zz.ravel())
+c.add_scalar_point_data('foo', ff.ravel())
+c.add_vector_point_data('bar', vx.ravel(), vy.ravel(), vz.ravel())
+c.write_to_file('qux')
